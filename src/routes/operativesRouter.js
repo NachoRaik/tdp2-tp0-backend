@@ -3,7 +3,7 @@ const express = require('express');
 const exampleOperatives = [
   {
     id: 1,
-    lugar: "Centro de Formación Profesional 38",
+    lugar: "CISI: Centro de investigaciones de sistemas inteligentes",
     direccion: "Padre Carlos Mugica 2474",
     calle: "",
     calle2: "",
