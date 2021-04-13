@@ -3,9 +3,9 @@ const app = require('./src/app');
 
 const main = () => {
   const app_port = process.env.PORT;
-  
+
   app().listen(app_port, () => {
-    console.log(`Media server up in port ${app_port}!`);
+    console.log(`Operatives serever up in port ${app_port}!`);
   });
 };
 
