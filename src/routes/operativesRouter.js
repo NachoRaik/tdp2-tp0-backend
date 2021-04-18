@@ -3,6 +3,7 @@ const express = require('express');
 const csv = require('csv-parser');
 const fs = require('fs');
 const results = [];
+const communes = []
 
 const POINT_REGEX = /POINT ()(?::(.+))?>/;
 
