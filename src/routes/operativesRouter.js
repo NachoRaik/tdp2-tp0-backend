@@ -3,9 +3,7 @@ const express = require('express');
 const csv = require('csv-parser');
 const fs = require('fs');
 const results = [];
-const communes = []
-
-const POINT_REGEX = /POINT ()(?::(.+))?>/;
+const communes = new Set();
 
 const pointToXAndY = point => {
   let point_vals = point.split(' ');
@@ -22,6 +20,7 @@ fs.createReadStream('resources/operativo-detectar.csv')
     }
   }))
   .on('data', (data) => {
+    communes.add(data["comuna"])
     let [x, y] = pointToXAndY(data.WKT);
     data['x'] = x;
     data['y'] = y;
@@ -30,34 +29,10 @@ fs.createReadStream('resources/operativo-detectar.csv')
   })
   .on('end', () => {
     console.log(results);
+    console.log(communes)
   });
 
-  fs.createReadStream('resources/operativo-detectar.csv')
-  .pipe(csv({
-    mapHeaders: ({ header, index }) => {
-      if (header === 'observacio') { header = 'observaciones'; }
-      return header;
-    }
-  }))
-  .on('data', (data) => {
-    delete data['WKT'];
-    delete data['id']
-    delete data['lugar']
-    delete data['direccion']
-    delete data['calle']
-    delete data['calle2']
-    delete data['observacio']
-    delete data['observaciones']
-    delete data['x']
-    delete data['y']
-    delete data['altura']
-    return communes.push(data);
-  })
-  .on('end', () => {
-    console.log(communes);
-  });
-
-// const exampleOperatives = [
+  // const exampleOperatives = [
 //   {
 //     id: 1,
 //     lugar: "CISI: Centro de investigaciones de sistemas inteligentes",
@@ -81,8 +56,7 @@ module.exports = function operativesRouter() {
         }
         return res.status(200).json(resp_results);
       }).get('/communes', async (req, res, next) => {
-        res_results = communes.filter((v,i,a)=>a.findIndex(t=>(t.comuna === v.comuna))===i);
-        return res.status(200).json(res_results);
+        return res.status(200).json(JSON.stringify(Array.from(communes.keys())));
       })
   );
 };
