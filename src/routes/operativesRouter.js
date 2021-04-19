@@ -32,6 +32,31 @@ fs.createReadStream('resources/operativo-detectar.csv')
     console.log(results);
   });
 
+  fs.createReadStream('resources/operativo-detectar.csv')
+  .pipe(csv({
+    mapHeaders: ({ header, index }) => {
+      if (header === 'observacio') { header = 'observaciones'; }
+      return header;
+    }
+  }))
+  .on('data', (data) => {
+    delete data['WKT'];
+    delete data['id']
+    delete data['lugar']
+    delete data['direccion']
+    delete data['calle']
+    delete data['calle2']
+    delete data['observacio']
+    delete data['observaciones']
+    delete data['x']
+    delete data['y']
+    delete data['altura']
+    return communes.push(data);
+  })
+  .on('end', () => {
+    console.log(communes);
+  });
+
 // const exampleOperatives = [
 //   {
 //     id: 1,
@@ -55,6 +80,9 @@ module.exports = function operativesRouter() {
           resp_results = results.filter(x => x.comuna === req.query.comuna);
         }
         return res.status(200).json(resp_results);
+      }).get('/communes', async (req, res, next) => {
+        res_results = communes.filter((v,i,a)=>a.findIndex(t=>(t.comuna === v.comuna))===i);
+        return res.status(200).json(res_results);
       })
   );
 };
